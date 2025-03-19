@@ -1,0 +1,8 @@
+2025-03-19 21:04:30.500 | DEBUG    | __main__:<module>:29 - This is a debug message.
+2025-03-19 21:04:30.500 | INFO     | __main__:<module>:30 - This is an info message.
+2025-03-19 21:04:30.500 | WARNING  | __main__:<module>:31 - This is a warning message.
+2025-03-19 21:04:30.500 | ERROR    | __main__:<module>:32 - This is an error message.
+2025-03-19 22:12:15.786 | DEBUG    | __main__:<module>:29 - This is a debug message.
+2025-03-19 22:12:15.786 | INFO     | __main__:<module>:30 - This is an info message.
+2025-03-19 22:12:15.786 | WARNING  | __main__:<module>:31 - This is a warning message.
+2025-03-19 22:12:15.787 | ERROR    | __main__:<module>:32 - This is an error message.
