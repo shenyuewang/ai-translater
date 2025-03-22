@@ -1,6 +1,6 @@
 OpenAIModel:
   model: "gpt-3.5-turbo"
-  api_key: "sk-26GNOAM1NeEnhjOL3858613005014e5bA5950a3b2f867460"
+  api_key: "*********************"
   base_url: "https://vip.apiyi.com/v1"
 GLMModel:
   model_url: "your_chatglm_model_url"

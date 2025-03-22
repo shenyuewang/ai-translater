@@ -2,8 +2,9 @@ from openai import base_url
 
 from utils import ArgumentParser
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import uvicorn
 import os
 
@@ -20,6 +21,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"]  # 添加这一行
 )
 
 # 创建上传文件保存的目录
@@ -27,9 +29,11 @@ UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-
+OUTPUT_DIR = "output"
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), target_language: str = Form(...)):
     # argument_parser = ArgumentParser()
     # args = argument_parser.parse_arguments()
     try:
@@ -53,8 +57,31 @@ async def upload_file(file: UploadFile = File(...)):
     file_path = UPLOAD_DIR + "/" + file.filename
     # 实例化 PDFTranslator 类，并调用 translate_pdf() 方法
     translator = PDFTranslator(model)
-    translator.translate_pdf(file_path, file_format)
 
+    output_file_path = translator.translate_pdf(file_path, file_format, target_language)
+    # 检查翻译后的文件是否存在
+    if not os.path.exists(output_file_path):
+        return {"error": "翻译后的文件不存在"}
+    # 获取文件名
+    translated_filename = os.path.basename(output_file_path)
+
+    # 创建文件流
+    def iterfile():
+        with open(output_file_path, "rb") as f:
+            while chunk := f.read(1024 * 1024):  # 每次读取 1MB
+                yield chunk
+    print(f'翻译后的文件名：{translated_filename}')
+    # 设置响应头，告诉浏览器这是一个文件下载
+    headers = {
+        'Content-Disposition': f'attachment; filename={translated_filename}'
+    }
+
+    # 返回文件流
+    return StreamingResponse(
+        iterfile(),
+        media_type='application/octet-stream',
+        headers=headers
+    )
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
