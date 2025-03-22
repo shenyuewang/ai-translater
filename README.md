@@ -1,0 +1,2 @@
+在根目录下的config.yaml文件中配置大模型的api-key和url
+front目录下是一个vue的项目
